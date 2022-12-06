@@ -1,13 +1,14 @@
 from django.contrib import admin
 
-from .models import (Band, Bookmark, Comment, Instrument, InstrumentCategory,
-                     InstrumentUser, Post, Request, Tag, UserBandInstrument)
+from .models import (Band, Bookmark, Comment, Instrument, Invite,
+                     InstrumentCategory, InstrumentUser, Post, Request,
+                     Tag, UserBandInstrument)
 
 
 @admin.register(Band)
 class BandAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'creator', 'title', 'quantity', 'description',
+        'id', 'author', 'title', 'quantity', 'description',
         'is_full', 'is_visible'
     )
     list_filter = ('title',)
@@ -51,6 +52,14 @@ class InstrumentCategoryAdmin(admin.ModelAdmin):
     empty_value_display = '-empty-'
 
 
+@admin.register(Invite)
+class InviteAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'user', 'band', 'instrument', 'author', 'is_accepted'
+    )
+    empty_value_display = '-empty-'
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'author', 'text', 'pub_date')
@@ -62,7 +71,7 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Request)
 class RequestAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'user', 'band', 'instrument', 'creator', 'is_approved'
+        'id', 'user', 'band', 'instrument', 'author', 'is_accepted'
     )
     empty_value_display = '-empty-'
 

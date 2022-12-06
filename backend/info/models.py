@@ -256,11 +256,11 @@ class Bookmark(models.Model):
 class Band(models.Model):
     """Band Model."""
 
-    creator = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='band_creator',
-        verbose_name='creator'
+        related_name='band_author',
+        verbose_name='author'
     )
     title = models.CharField(
         verbose_name='title',
@@ -268,6 +268,13 @@ class Band(models.Model):
         blank=False,
         null=False,
         unique=True
+    )
+    poster = models.ImageField(
+        verbose_name='poster',
+        upload_to='bands/posters/',
+        blank=True,
+        null=True,
+        default=None
     )
     participants = models.ManyToManyField(
         User,
@@ -282,8 +289,16 @@ class Band(models.Model):
         blank=False,
         null=False
     )
-    is_full = models.BooleanField(verbose_name='is_full', default=False)
-    is_visible = models.BooleanField(verbose_name='is_visible', default=True)
+    is_full = models.BooleanField(
+        verbose_name='is_full',
+        null=True,
+        default=False
+    )
+    is_visible = models.BooleanField(
+        verbose_name='is_visible',
+        null=True,
+        default=True
+    )
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -349,14 +364,14 @@ class Request(models.Model):
         related_name='instrument_request',
         verbose_name='instrument'
     )
-    creator = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='creator_request',
-        verbose_name='creator'
+        related_name='author_request',
+        verbose_name='author'
     )
-    is_approved = models.BooleanField(
-        verbose_name='is_approved',
+    is_accepted = models.BooleanField(
+        verbose_name='is_accepted',
         default=False
     )
 
@@ -369,4 +384,42 @@ class Request(models.Model):
         return f'{self.pk}'
 
 
+class Invite(models.Model):
+    """Request to Join some Band Model."""
 
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='user_invite',
+        verbose_name='user'
+    )
+    band = models.ForeignKey(
+        Band,
+        on_delete=models.CASCADE,
+        related_name='invite_user',
+        verbose_name='band'
+    )
+    instrument = models.ForeignKey(
+        Instrument,
+        on_delete=models.CASCADE,
+        related_name='instrument_invite',
+        verbose_name='instrument'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='author_invite',
+        verbose_name='author'
+    )
+    is_accepted = models.BooleanField(
+        verbose_name='is_accepted',
+        default=False
+    )
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Invite'
+        verbose_name_plural = 'Invites'
+
+    def __str__(self):
+        return f'{self.pk}'

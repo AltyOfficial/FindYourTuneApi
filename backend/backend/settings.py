@@ -29,7 +29,9 @@ INSTALLED_APPS = [
     'django_filters',
     'info.apps.InfoConfig',
     'users.apps.UsersConfig',
+    'api.apps.ApiConfig',
     'colorfield',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -65,8 +67,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default='postgres'),
+        'USER': os.getenv('POSTGRES_USER', default='posgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+        'HOST': os.getenv('DB_HOST', default='db'),
+        'PORT': os.getenv('DB_PORT', default='5432')
     }
 }
 
