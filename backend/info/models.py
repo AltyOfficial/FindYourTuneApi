@@ -5,7 +5,6 @@ from django.db import models
 from django.utils import timezone
 
 
-
 User = get_user_model()
 
 
@@ -153,12 +152,14 @@ class Post(models.Model):
     image = models.ImageField(
         verbose_name='image',
         upload_to='posts/images/',
+        blank=True,
         null=True,
         default=None
     )
     audio = models.FileField(
         verbose_name='audio',
         upload_to='posts/audios/',
+        blank=True,
         null=True,
         validators=[FileExtensionValidator(allowed_extensions=['wav', 'mp3'])],
         default=None
@@ -190,7 +191,7 @@ class Post(models.Model):
         return f'/posts/{self.pk}/'
 
 
-class Comment(models.Model):
+class Review(models.Model):
     """Comment to Some Post Model."""
 
     post = models.ForeignKey(
@@ -201,7 +202,7 @@ class Comment(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='comments'
+        related_name='author_reviews'
     )
     text = models.TextField(max_length=1000)
     image = models.ImageField(
@@ -221,8 +222,8 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Comment'
-        verbose_name_plural = 'Comments'
+        verbose_name = 'Review'
+        verbose_name_plural = 'Reviews'
 
     def __str__(self):
         return self.text[:20]

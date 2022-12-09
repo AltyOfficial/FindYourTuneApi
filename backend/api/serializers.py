@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .fields import Base64AudioField, Base64ImageField
-from info.models import (Band, Bookmark, Comment, Instrument,
+from info.models import (Band, Bookmark, Review, Instrument,
                          InstrumentCategory, InstrumentUser, Invite, Post, 
                          Request, Tag, UserBandInstrument)
 from users.serializers import UserInstrumentSerializer
@@ -16,6 +16,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
+        lookup_field = 'slug'
         fields = ('id', 'title', 'color', 'slug')
 
 
@@ -26,8 +27,9 @@ class PostSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True
     )
-    image = Base64ImageField()
-    audio = Base64AudioField()
+    image = Base64ImageField(required=False)
+    audio = Base64AudioField(required=False)
+    likes = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -47,6 +49,18 @@ class PostSerializer(serializers.ModelSerializer):
         post = Post.objects.create(author=author, **validated_data)
         self.add_tags(post, tags)
         return post
+    
+    def get_likes(self, obj):
+        return obj.likes.count()
+
+
+class InstrumentCategorySerializer(serializers.ModelSerializer):
+    """Instrument Category Serializer."""
+
+    class Meta:
+        model = InstrumentCategory
+        lookup_field = 'slug'
+        fields = ('id', 'title', 'slug')
 
 
 class InstrumentSerailizer(serializers.ModelSerializer):
@@ -165,4 +179,42 @@ class RequestSerializer(serializers.ModelSerializer):
                 'You are already in this band'
             )
 
+        return attrs
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Comment Serializer."""
+
+    image = Base64ImageField(required=False)
+    audio = Base64AudioField(required=False)
+
+    class Meta:
+        model = Review
+        fields = ('id', 'post', 'author', 'text', 'image', 'audio', 'created')
+        read_only_fields = ('created',)
+    
+    def validate(self, attrs):
+        post = attrs['post']
+        author = attrs['author']
+        if Review.objects.filter(post=post, author=author).exists():
+            raise serializers.ValidationError(
+                'You can send only one review to this post. Delete it first'
+            )
+        return super().validate(attrs)
+    
+
+class BookmarkSeriazlier(serializers.ModelSerializer):
+    """Bookmark Serializer."""
+
+    class Meta:
+        model = Bookmark
+        fields = ('id', 'user', 'post')
+    
+    def validate(self, attrs):
+        user = attrs['user']
+        post = attrs['post']
+        if Bookmark.objects.filter(user=user, post=post).exists():
+            raise serializers.ValidationError(
+                'You have already added this post in your bookmarks'
+            )
         return attrs

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import (Band, Bookmark, Comment, Instrument, Invite,
+from .models import (Band, Bookmark, Review, Instrument, Invite,
                      InstrumentCategory, InstrumentUser, Post, Request,
                      Tag, UserBandInstrument)
 
@@ -22,8 +22,8 @@ class BookmarkAdmin(admin.ModelAdmin):
     empty_value_display = '-empty-'
 
 
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
     list_display = ('id', 'post', 'author', 'text', 'created')
     list_filter = ('post',)
     search_fields = ('post',)

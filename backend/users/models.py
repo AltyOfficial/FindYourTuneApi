@@ -1,9 +1,22 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-User = get_user_model()
+class User(AbstractUser):
+    """User Model."""
+
+    first_name = models.CharField(max_length=150, blank=False)
+    last_name = models.CharField(max_length=150, blank=False)
+    instruments = models.ManyToManyField(
+        'info.Instrument',
+        related_name='users',
+        verbose_name='instruments'
+    )
+
+    class Meta:
+        ordering = ['username']
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
 
 
 class Follow(models.Model):

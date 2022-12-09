@@ -15,31 +15,34 @@ class UserInstrumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name', 'instrument')
-        # fields = ('id', 'username', 'first_name', 'last_name')
     
     def get_instrument(self, obj):
-        # print(UserBandInstrument.objects.all())
-        # print(UserBandInstrument.objects.filter(user=obj))
-        # print(Instrument.objects.filter())
-        # object = UserBandInstrument.objects.filter(user=obj)[0]
-        # instrument = UserBandInstrument.objects.get(user=obj).instrument
-        # return instrument.title
-        return 'xdd'
+        return UserBandInstrument.objects.get(user=obj).instrument.title
+
+
+class InstrumentUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Instrument
+        fields = ('id', 'title')
 
 
 class UserListSerializer(serializers.ModelSerializer):
     """Serializer for User."""
+    instruments = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = User
         fields = (
-            'email', 'id', 'username', 'first_name', 'last_name', 'password'
+            'email', 'id', 'username', 'first_name', 'last_name', 'password', 'instruments'
         )
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         user = User(
-            username=validated_data['username']
+            username=validated_data['username'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
         )
         user.set_password(validated_data['password'])
         user.save()
