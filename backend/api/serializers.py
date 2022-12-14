@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from .fields import Base64AudioField, Base64ImageField
 from info.models import (Band, Bookmark, Review, Instrument,
-                         InstrumentCategory, InstrumentUser, Invite, Post, 
+                         InstrumentCategory, Post,
                          Request, Tag, UserBandInstrument)
 from users.serializers import UserInstrumentSerializer
 
@@ -49,7 +49,7 @@ class PostSerializer(serializers.ModelSerializer):
         post = Post.objects.create(author=author, **validated_data)
         self.add_tags(post, tags)
         return post
-    
+
     def get_likes(self, obj):
         return obj.likes.count()
 
@@ -122,7 +122,7 @@ class BandSerializer(serializers.ModelSerializer):
         band.participants.add(author)
 
         return band
-    
+
     def update(self, instance, validated_data):
         if 'quantity' in validated_data:
             quantity = validated_data.pop('quantity')
@@ -192,7 +192,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ('id', 'post', 'author', 'text', 'image', 'audio', 'created')
         read_only_fields = ('created',)
-    
+
     def validate(self, attrs):
         post = attrs['post']
         author = attrs['author']
@@ -201,7 +201,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 'You can send only one review to this post. Delete it first'
             )
         return super().validate(attrs)
-    
+
 
 class BookmarkSeriazlier(serializers.ModelSerializer):
     """Bookmark Serializer."""
@@ -209,7 +209,7 @@ class BookmarkSeriazlier(serializers.ModelSerializer):
     class Meta:
         model = Bookmark
         fields = ('id', 'user', 'post')
-    
+
     def validate(self, attrs):
         user = attrs['user']
         post = attrs['post']

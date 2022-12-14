@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db import models
 from rest_framework import serializers
 
 from info.models import Instrument, UserBandInstrument, Invite, Band
@@ -15,7 +14,7 @@ class UserInstrumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name', 'instrument')
-    
+
     def get_instrument(self, obj):
         return UserBandInstrument.objects.get(user=obj).instrument.title
 
@@ -34,7 +33,8 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'email', 'id', 'username', 'first_name', 'last_name', 'password', 'instruments'
+            'email', 'id', 'username', 'first_name',
+            'last_name', 'password', 'instruments'
         )
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -90,9 +90,3 @@ class InviteSerializer(serializers.ModelSerializer):
             )
 
         return attrs
-
-    # def get_band(self, obj):
-    #     return obj.band.title
-    
-    # def get_instrument(self, obj):
-    #     return obj.instrument.title

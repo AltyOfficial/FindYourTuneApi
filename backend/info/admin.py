@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (Band, Bookmark, Review, Instrument, Invite,
-                     InstrumentCategory, InstrumentUser, Post, Request,
+                     InstrumentCategory, Post, Request,
                      Tag, UserBandInstrument)
 
 
@@ -35,12 +35,6 @@ class InstrumentAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'category')
     list_filter = ('title',)
     search_fields = ('title',)
-    empty_value_display = '-empty-'
-
-
-@admin.register(InstrumentUser)
-class InstrumentUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'instrument')
     empty_value_display = '-empty-'
 
 

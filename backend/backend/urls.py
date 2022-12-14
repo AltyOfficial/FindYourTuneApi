@@ -12,7 +12,6 @@ schema_view = get_schema_view(
       title="FindYourTune API",
       default_version='v1',
       description="Documentation for API enpoints for FindYourTune Project.",
-      # terms_of_service="URL страницы с пользовательским соглашением",
       contact=openapi.Contact(email="ro"),
       license=openapi.License(name="MIT License"),
    ),
@@ -31,8 +30,11 @@ urlpatterns = [
 
 
 urlpatterns += [
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), 
-       name='schema-redoc'),
+    re_path(
+        r'^redoc/$',
+        schema_view.with_ui('redoc', cache_timeout=0),
+        name='schema-redoc'
+    ),
 ]
 
 

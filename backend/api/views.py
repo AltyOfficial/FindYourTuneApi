@@ -1,19 +1,20 @@
 from django.contrib.auth import get_user_model
-from django.core import serializers
 from django.core.exceptions import ValidationError
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from info.models import (Band, Bookmark, Review, Instrument,
-                         InstrumentCategory, InstrumentUser, Invite, Post, 
+                         InstrumentCategory, Invite, Post,
                          Request, Tag, UserBandInstrument)
 
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .serializers import (BandSerializer, PostSerializer, TagSerializer,
-                          InstrumentSerailizer, RequestSerializer, InstrumentCategorySerializer, ReviewSerializer, BookmarkSeriazlier)
+from .serializers import (BandSerializer, BookmarkSeriazlier,
+                          InstrumentCategorySerializer, InstrumentSerailizer,
+                          PostSerializer, RequestSerializer, ReviewSerializer,
+                          TagSerializer)
 
 
 User = get_user_model()
@@ -25,10 +26,10 @@ class BandViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return (
-            Band.objects.filter(is_visible=True) | 
+            Band.objects.filter(is_visible=True) |
             Band.objects.filter(is_visible=False, author=self.request.user)
         )
-    
+
     @action(
         methods=['POST', 'DELETE'],
         detail=True,
@@ -43,7 +44,7 @@ class BandViewSet(viewsets.ModelViewSet):
             serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         author = request.user
         user = get_object_or_404(User, id=pk)
         Invite.objects.get(author=author, user=user).delete()
@@ -95,10 +96,10 @@ class PostViewSet(viewsets.ModelViewSet):
                 'Your like was submitted',
                 status=status.HTTP_200_OK
             )
-        
+
         post.likes.remove(request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
     @action(
         methods=['POST', 'DELETE'],
         detail=True,
@@ -119,12 +120,12 @@ class PostViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         post = get_object_or_404(Post, id=pk)
         review = get_object_or_404(Review, post=post, author=request.user)
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
     @action(
         methods=['GET'],
         detail=True,
@@ -146,12 +147,13 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if request.method == 'POST':
             data = {'user': request.user.id, 'post': pk}
-            serializer = BookmarkSeriazlier(data=data, context={'request': request})
+            serializer = BookmarkSeriazlier(
+                data=data, context={'request': request})
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         user = request.user
         post = get_object_or_404(Post, id=pk)
         obj = get_object_or_404(Bookmark, post=post, user=user)
@@ -163,10 +165,10 @@ class PostViewSet(viewsets.ModelViewSet):
 class RequestViewSet(viewsets.ModelViewSet):
     serializer_class = RequestSerializer
     permission_classes = [IsAuthorOrReadOnly]
-    
+
     def get_queryset(self):
         return Request.objects.filter(user=self.request.user)
-    
+
     @action(
         methods=['POST'],
         detail=True,
@@ -197,4 +199,3 @@ class RequestViewSet(viewsets.ModelViewSet):
         request_obj.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-

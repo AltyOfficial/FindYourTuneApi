@@ -8,7 +8,7 @@ class IsAuthorOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS or request.user.is_authenticated:
             return True
         return False
-    
+
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
@@ -24,7 +24,7 @@ class IsAdminOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS or request.user.is_superuser:
             return True
         return False
-    
+
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True

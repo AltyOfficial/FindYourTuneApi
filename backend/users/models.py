@@ -21,16 +21,12 @@ class User(AbstractUser):
 
 class Follow(models.Model):
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='follower',
-        verbose_name='user'
+        User, on_delete=models.CASCADE,
+        related_name='follower', verbose_name='user'
     )
     author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='following',
-        verbose_name='author'
+        User, on_delete=models.CASCADE,
+        related_name='following', verbose_name='author'
     )
 
     class Meta:
@@ -43,6 +39,6 @@ class Follow(models.Model):
                 name='unique_follow'
             )
         ]
-    
+
     def __str__(self):
         return f'{self.user.username} - {self.author.username}'

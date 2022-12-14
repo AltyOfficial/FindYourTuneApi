@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.shortcuts import render, get_object_or_404
-from rest_framework import viewsets, status, serializers
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -20,10 +20,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserListSerializer
 
     def get_permissions(self):
-            if self.request.method == 'POST':
-                return (AllowAny(),)
+        if self.request.method == 'POST':
+            return (AllowAny(),)
 
-            return (IsAuthenticated(),)
+        return (IsAuthenticated(),)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -39,7 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         author = request.user
         user = get_object_or_404(User, id=pk)
         Invite.objects.get(author=author, user=user).delete()
@@ -50,10 +50,10 @@ class UserViewSet(viewsets.ModelViewSet):
 class InviteViewSet(viewsets.ModelViewSet):
     serializer_class = InviteSerializer
     permission_classes = [IsAuthorOrReadOnly]
-    
+
     def get_queryset(self):
         return Invite.objects.filter(user=self.request.user)
-    
+
     @action(
         methods=['POST'],
         detail=True,

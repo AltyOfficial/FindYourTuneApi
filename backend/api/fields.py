@@ -1,7 +1,6 @@
 import base64
 
 from django.core.files.base import ContentFile
-from drf_extra_fields.fields import Base64FileField
 from rest_framework import serializers
 
 
@@ -13,13 +12,6 @@ class Base64ImageField(serializers.ImageField):
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
         return super().to_internal_value(data)
-
-
-# class Base64AudioField(Base64FileField):
-#     ALLOWED_TYPES = ['mp3']
-
-#     def get_file_extension(self, filename, decoded_file):
-#         return 'mp3'
 
 
 class Base64AudioField(serializers.FileField):
