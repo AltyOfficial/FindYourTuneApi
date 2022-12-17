@@ -187,7 +187,7 @@ class RequestViewSet(viewsets.ModelViewSet):
 
         band = Band.objects.get(author=request.user)
 
-        if band.quantity >= band.participants.count():
+        if band.quantity <= band.participants.count():
             raise ValidationError('Your band is full')
 
         band.participants.add(request_obj.author)
