@@ -66,7 +66,9 @@ class InstrumentCategorySerializer(serializers.ModelSerializer):
 class InstrumentSerailizer(serializers.ModelSerializer):
     """Instrument Serializer."""
 
-    category = serializers.ReadOnlyField(source='category.title')
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=InstrumentCategory.objects.all()
+    )
 
     class Meta:
         model = Instrument

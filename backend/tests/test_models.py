@@ -173,7 +173,10 @@ class BandModelTests(APITestCase):
         band_id = response.data.get('id')
 
         url = f'/api/bands/{band_id}/'
-        response = self.author.patch(url, {'title': 'Updated Title'})
+        post_update_data = {
+            'title': 'Updated Title'
+        }
+        response = self.author.patch(url, post_update_data)
 
         self.assertEqual(response.data['title'], 'Updated Title')
         self.assertEqual(response.data['id'], band_id)
@@ -220,6 +223,7 @@ class BandModelTests(APITestCase):
         self.assertEqual(Request.objects.count(), request_count)
         self.assertEqual(band.participants.count(), 2)
 
+        # Second request shall not work
         url = f'/api/bands/{band_id}/send_request/'
         response = self.client.post(url, request_data, format='json')
 
@@ -235,5 +239,67 @@ class BandModelTests(APITestCase):
         response = self.author.post(url, self.band_data, format='json')
         band_id = response.data.get('id')
         band = Band.objects.get(id=band_id)
+        client_id = self.client_user.id
+
+        invite_count = Invite.objects.count()
+
+        url = f'/api/users/{client_id}/invite_user/'
+        invite_data = {'instrument': 'Violin'}
+        response = self.author.post(url, invite_data, format='json')
+        invite_id = response.data.get('id')
+
+        self.assertEqual(Invite.objects.count(), invite_count + 1)
+
+        url = f'/api/invites/{invite_id}/accept/'
+        response = self.client.post(url)
+
+        self.assertEqual(band.participants.count(), 2)
 
 
+class InstrumentTagModelTesting(APITestCase):
+    """Testing for Instrument and Tag Model."""
+
+    @classmethod
+    def setUpClass(self):
+        super().setUpClass()
+        self.instrument_category = InstrumentCategory.objects.create(
+            title='Strings',
+            slug='strings'
+        )
+    
+    def setUp(self):
+        self.client = APIClient()
+        self.client_user = User.objects.create_user(
+            'user',
+            'user@user.com',
+            'user1234'
+        )
+    
+    def test_cannot_create_instrument(self):
+        """Instrument can be created only by Admin."""
+
+        self.client.force_authenticate(user=self.client_user)
+
+        url = '/api/instruments/'
+        instrument_data = {
+            'title': 'Cello',
+            'category': 1
+        }
+        response = self.client.post(url, instrument_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_cannot_create_tag(self):
+        """Tag can be created only by Admin."""
+
+        self.client.force_authenticate(user=self.client_user)
+
+        url = '/api/tags/'
+        tag_data = {
+            'title': 'Test Tag',
+            'color': '#123456',
+            'slug': 'testslug'
+        }
+        response = self.client.post(url, tag_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
