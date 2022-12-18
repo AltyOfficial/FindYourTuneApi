@@ -1,14 +1,19 @@
+import shutil
+
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
 
-from api.serializers import InstrumentSerailizer, InstrumentCategorySerializer
-from info.models import Instrument, InstrumentCategory, Post, Tag, Band, Invite, Request
+from info.models import (Band, Instrument, InstrumentCategory, Invite,
+                         Post, Request, Tag)
 
 
 User = get_user_model()
+
+TEST_DIR = 'tests'
+TEMP_MEDIA_ROOT = TEST_DIR + '/media'
 
 
 class PostModelTests(APITestCase):
@@ -146,7 +151,13 @@ class BandModelTests(APITestCase):
             'user@user.com',
             'user1234'
         )
-    
+
+    @classmethod
+    def tearDownClass(self):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+
+    @override_settings(MEDIA_ROOT=(TEMP_MEDIA_ROOT))
     def test_create_band(self):
         self.author.force_authenticate(user=self.author_user)
 
@@ -162,6 +173,7 @@ class BandModelTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
+    @override_settings(MEDIA_ROOT=(TEMP_MEDIA_ROOT))
     def test_update_band(self):
         """Updating the Band."""
 
@@ -187,6 +199,7 @@ class BandModelTests(APITestCase):
         self.assertEqual(Band.objects.get(id=band_id).title, 'Updated Title')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
     
+    @override_settings(MEDIA_ROOT=(TEMP_MEDIA_ROOT))
     def test_band_request(self):
         """Sending and Accepting Band Requests."""
 
@@ -229,6 +242,7 @@ class BandModelTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @override_settings(MEDIA_ROOT=(TEMP_MEDIA_ROOT))
     def test_band_invite(self):
         """Sending and Accepting Invite to the Band."""
 
