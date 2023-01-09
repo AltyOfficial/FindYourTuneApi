@@ -1,8 +1,9 @@
 from django.contrib import admin
 
+from .forms import GenreForm
 from .models import (Band, Bookmark, Review, Instrument, Invite,
                      InstrumentCategory, Post, Request,
-                     Tag, UserBandInstrument)
+                     Tag, UserBandInstrument, Genre)
 
 
 @admin.register(Band)
@@ -12,6 +13,14 @@ class BandAdmin(admin.ModelAdmin):
         'is_full', 'is_visible'
     )
     list_filter = ('title',)
+    search_fields = ('title',)
+    empty_value_display = '-empty-'
+
+
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    form = GenreForm
+    list_display = ('id', 'title', 'color', 'slug')
     search_fields = ('title',)
     empty_value_display = '-empty-'
 

@@ -29,6 +29,39 @@ class InstrumentCategory(models.Model):
         return self.title
 
 
+class Genre(models.Model):
+    """Genre Model."""
+
+    COLOR_PALETTE = [
+        ("#FFFFFF", "white", ),
+        ("#000000", "black", ),
+    ]
+
+    title = models.CharField(
+        verbose_name='title', max_length=255, blank=False,
+        null=False, unique=True
+    )
+    # color = ColorField(samples=COLOR_PALETTE)
+    color = models.CharField(
+        verbose_name='color',
+        max_length=7,
+        blank=False,
+        null=False,
+    )
+    slug = models.SlugField(
+        verbose_name='slug', max_length=50, blank=False,
+        null=False, unique=True
+    )
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Gemre'
+        verbose_name_plural = 'Genres'
+
+    def __str__(self):
+        return self.title
+
+
 class Tag(models.Model):
     """Tag Model."""
 
@@ -69,7 +102,7 @@ class Instrument(models.Model):
     )
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('category',)
         verbose_name = 'Instrument'
         verbose_name_plural = 'Instruments'
 

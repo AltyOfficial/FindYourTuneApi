@@ -3,12 +3,13 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from info.models import (Band, Bookmark, Review, Instrument,
                          InstrumentCategory, Invite, Post,
                          Request, Tag, UserBandInstrument)
+from utils.pagination import ResponseOnlyPagination
 
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (BandSerializer, BookmarkSeriazlier,
@@ -56,6 +57,7 @@ class InstrumentCategoryViewSet(viewsets.ModelViewSet):
     queryset = InstrumentCategory.objects.all()
     serializer_class = InstrumentCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
+    pagination_class = ResponseOnlyPagination
     lookup_field = 'slug'
 
 
