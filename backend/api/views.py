@@ -26,10 +26,15 @@ class BandViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthorOrReadOnly]
 
     def get_queryset(self):
-        return (
-            Band.objects.filter(is_visible=True) |
-            Band.objects.filter(is_visible=False, author=self.request.user)
-        )
+        base_queryset = Band.objects.filter(is_visible=True)
+
+        if not self.request.user.is_anonymous:
+            base_queryset += Band.objects.filter(
+                is_visible=False,
+                author=self.request.user
+            )
+
+        return base_queryset
 
     @action(
         methods=['POST', 'DELETE'],

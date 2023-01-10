@@ -5,7 +5,7 @@ from .fields import Base64AudioField, Base64ImageField
 from info.models import (Band, Bookmark, Review, Instrument,
                          InstrumentCategory, Post,
                          Request, Tag, UserBandInstrument)
-from users.serializers import UserInstrumentSerializer
+from users.serializers import UserInstrumentSerializer, UserListSerializer
 
 
 User = get_user_model()
@@ -23,6 +23,7 @@ class TagSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     """Post Serializer."""
 
+    author = UserListSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
