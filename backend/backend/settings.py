@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'info.apps.InfoConfig',
     'api.apps.ApiConfig',
     'utils.apps.UtilsConfig',
+    'corsheaders',
     'colorfield',
     'drf_yasg',
     'users',
